@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import axiosInstance from "@/helpers/axiosInstance";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -45,10 +46,27 @@ export default function LoginForm() {
 
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: async (formData: FormData) => {
-      await axios.post("/users/auth/sign-in", formData);
+      // Use axiosInstance (baseURL -> backend, withCredentials: true)
+      // return the axios response so onSuccess receives it
+      return axiosInstance.post("/api/users/auth/sign-in", formData);
     },
-    onSuccess: (data) => {
-      console.log("data", data);
+    onSuccess: (res) => {
+      // `res` is the axios response object. Prefer res.data.token (backend returns token)
+      const token = res?.data?.token;
+      if (token) {
+        try {
+          localStorage.setItem("token", token);
+        } catch (e) {
+          console.warn("Could not store token in localStorage", e);
+        }
+
+        // Ensure Authorization header is set for future requests
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        // Also set on axiosInstance used across the app
+        axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      }
+
+      console.log("login response", res?.data);
       toast.success("Login Success!", {
         description: searchParams.get("redirect_to")
           ? "Redirecting to your page..."
@@ -56,10 +74,6 @@ export default function LoginForm() {
         position: "top-center",
       });
 
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${data?.access_token}`;
-      refetch();
       form.reset();
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
