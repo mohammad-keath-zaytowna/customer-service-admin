@@ -3,7 +3,7 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { redirect, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -25,26 +25,30 @@ import { FormSubmitButton } from "@/components/shared/form/FormSubmitButton";
 import { loginFields } from "./fields";
 import { loginFormSchema } from "./schema";
 import AuthProviders from "@/components/shared/auth/AuthProviders";
+import { useUser } from "@/contexts/UserContext";
 
 type FormData = z.infer<typeof loginFormSchema>;
 
 export default function LoginForm() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { refetch } = useUser();
 
   const form = useForm<FormData>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      email: "test@admin.com",
-      password: "test12345",
+      email: "",
+      password: "",
     },
   });
 
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: async (formData: FormData) => {
-      await axios.post("/auth/sign-in", formData);
+      await axios.post("/users/auth/sign-in", formData);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("data", data);
       toast.success("Login Success!", {
         description: searchParams.get("redirect_to")
           ? "Redirecting to your page..."
@@ -52,11 +56,14 @@ export default function LoginForm() {
         position: "top-center",
       });
 
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${data?.access_token}`;
+      refetch();
       form.reset();
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (error) => {
-      console.log("error", error);
       if (axios.isAxiosError(error)) {
         const { errors } = error.response?.data;
 
@@ -80,10 +87,9 @@ export default function LoginForm() {
   useEffect(() => {
     if (isSuccess) {
       const redirectTo = searchParams.get("redirect_to");
-
-      return redirect(redirectTo || "/");
+      router.push(redirectTo || "/");
     }
-  }, [isSuccess, searchParams]);
+  }, [isSuccess, searchParams, router]);
 
   return (
     <div className="w-full">
@@ -125,14 +131,14 @@ export default function LoginForm() {
 
       <AuthProviders />
 
-      <div className="flex flex-wrap justify-between gap-4 w-full">
+      {/* <div className="flex flex-wrap justify-between gap-4 w-full">
         <Typography variant="a" href="/forgot-password" className="md:!text-sm">
           Forgot password?
         </Typography>
         <Typography variant="a" href="/signup" className="md:!text-sm">
           Create an account
         </Typography>
-      </div>
+      </div> */}
     </div>
   );
 }

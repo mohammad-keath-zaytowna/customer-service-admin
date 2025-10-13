@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   // Proxy sign-in to our backend which will set an HttpOnly cookie
   try {
     const backendRes = await fetch(
-      `${process.env.BACKEND_URL || "http://localhost:5000"}/api/users/login`,
+      `${process.env.BACKEND_URL || "http://localhost:5000"}/auth/sign-in`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,8 +39,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // Backend sets HttpOnly cookie; forward success
-    return NextResponse.json({ success: true });
+    // Backend sets HttpOnly cookie; forward Set-Cookie header to client and redirect
+    const url = new URL(request.url);
+    const redirectTo = url.searchParams.get("redirect_to") || "/";
+
+    // Grab Set-Cookie header from backend response (if any)
+    const backendSetCookie = backendRes.headers.get("set-cookie");
+
+    const response = NextResponse.redirect(redirectTo);
+    if (backendSetCookie) {
+      // Forward cookie so browser stores it for subsequent requests
+      response.headers.set("Set-Cookie", backendSetCookie);
+    }
+
+    return response;
   } catch (err) {
     console.error("Sign-in proxy error", err);
     return NextResponse.json(

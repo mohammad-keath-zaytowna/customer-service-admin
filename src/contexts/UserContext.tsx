@@ -16,12 +16,14 @@ type UserContextType = {
   user: any | null;
   profile: UserProfile | null;
   isLoading: boolean;
+  refetch: () => Promise<void>;
 };
 
 const UserContext = createContext<UserContextType>({
   user: null,
   profile: null,
   isLoading: true,
+  refetch: async () => Promise.resolve(),
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -31,12 +33,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   // Poll or invalidate when needed: we don't have supabase.onAuthStateChange, so
   // callers should call queryClient.invalidateQueries(['user-profile']) after login/logout.
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
       try {
-        const res = await axios.get('/api/users/me');
-        return { user: res.data?.user ?? null, profile: res.data?.user ?? null };
+        const res = await axios.get("/api/users/me");
+        return {
+          user: res.data?.user ?? null,
+          profile: res.data?.user ?? null,
+        };
       } catch (err) {
         return { user: null, profile: null };
       }
@@ -48,6 +53,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     user: data?.user ?? null,
     profile: data?.profile ?? null,
     isLoading,
+    refetch,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
