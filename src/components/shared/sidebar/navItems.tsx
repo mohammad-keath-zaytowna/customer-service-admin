@@ -7,24 +7,24 @@ import { TbBriefcase } from "react-icons/tb";
 import { MdOutlineShoppingCart } from "react-icons/md";
 
 export const navItems = [
-  {
-    title: "Dashboard",
-    url: "/",
-    icon: <MdOutlineDashboard />,
-  },
-  {
-    title: "Products",
-    url: "/products",
-    icon: <MdOutlineShoppingCart />,
-  },
-  {
-    title: "Categories",
-    url: "/categories",
-    icon: <TbTag />,
-  },
+  // {
+  //   title: "Dashboard",
+  //   url: "/",
+  //   icon: <MdOutlineDashboard />,
+  // },
+  // {
+  //   title: "Products",
+  //   url: "/products",
+  //   icon: <MdOutlineShoppingCart />,
+  // },
+  // {
+  //   title: "Categories",
+  //   url: "/categories",
+  //   icon: <TbTag />,
+  // },
   {
     title: "Customers",
-    url: "/customers",
+    url: "/",
     icon: <LuUsers2 />,
   },
   {
@@ -32,14 +32,14 @@ export const navItems = [
     url: "/orders",
     icon: <TbTruckDelivery />,
   },
-  {
-    title: "Coupons",
-    url: "/coupons",
-    icon: <RiCoupon2Line />,
-  },
-  {
-    title: "Staff",
-    url: "/staff",
-    icon: <TbBriefcase />,
-  },
+  // {
+  //   title: "Coupons",
+  //   url: "/coupons",
+  //   icon: <RiCoupon2Line />,
+  // },
+  // {
+  //   title: "Staff",
+  //   url: "/staff",
+  //   icon: <TbBriefcase />,
+  // },
 ];
