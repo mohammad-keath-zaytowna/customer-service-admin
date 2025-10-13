@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import FetchDropdownContainer from "@/components/shared/FetchDropdownContainer";
 
-import { createBrowserClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/backendClient";
 import { fetchStaffRolesDropdown } from "@/services/staff";
 
 export default function StaffFilters() {

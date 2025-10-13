@@ -56,6 +56,7 @@ export default function LoginForm() {
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (error) => {
+      console.log("error", error);
       if (axios.isAxiosError(error)) {
         const { errors } = error.response?.data;
 

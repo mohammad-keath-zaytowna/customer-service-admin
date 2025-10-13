@@ -1,18 +1,22 @@
-import { User } from "@supabase/auth-helpers-nextjs";
-
-import { createServerClient } from "@/lib/supabase/server";
 /**
- * getUser - Function to retrieve user information from Supabase.
- * @returns A Promise that resolves to the user data.
+ * getUser - Server helper to retrieve user information from backend via cookies.
+ * Returns the user object or null.
  */
-export async function getUser(): Promise<User | null> {
-  const supabase = createServerClient();
+export async function getUser(): Promise<any | null> {
+  try {
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+    const res = await fetch(`${backendUrl}/api/users/me`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      // Cookies are sent automatically by Next's fetch in server environment when using relative URLs.
+      // For external backend we rely on the browser to include cookies; ensure BACKEND_URL matches origin.
+    });
 
-  // Call Supabase's getUser() method to retrieve user data.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Return the user data obtained from Supabase.
-  return user;
+    if (!res.ok) return null;
+    const payload = await res.json();
+    return payload?.user ?? null;
+  } catch (err) {
+    console.error("Error fetching user from backend:", err);
+    return null;
+  }
 }

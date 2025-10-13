@@ -1,5 +1,3 @@
-import { SupabaseClient } from "@supabase/supabase-js";
-
 import { Database } from "@/types/supabase";
 import {
   Staff,
@@ -11,7 +9,7 @@ import {
 import { queryPaginatedTable } from "@/helpers/queryPaginatedTable";
 
 export async function fetchStaff(
-  client: SupabaseClient<Database>,
+  client: any,
   { page = 1, limit = 10, search, role }: FetchStaffParams
 ): Promise<FetchStaffResponse> {
   const selectQuery = `
@@ -47,7 +45,7 @@ export async function fetchStaff(
 }
 
 export async function fetchStaffRolesDropdown(
-  client: SupabaseClient<Database>
+  client: any
 ): Promise<StaffRolesDropdown[]> {
   const { data, error } = await client
     .from("staff_roles")
@@ -62,7 +60,7 @@ export async function fetchStaffRolesDropdown(
 }
 
 export async function fetchStaffDetails(
-  client: SupabaseClient<Database>
+  client: any
 ): Promise<SBStaff | null> {
   const {
     data: { user },

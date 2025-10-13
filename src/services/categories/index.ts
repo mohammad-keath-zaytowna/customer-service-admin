@@ -1,5 +1,3 @@
-import { SupabaseClient } from "@supabase/supabase-js";
-
 import { Database } from "@/types/supabase";
 import {
   Category,
@@ -10,7 +8,7 @@ import {
 import { queryPaginatedTable } from "@/helpers/queryPaginatedTable";
 
 export async function fetchCategories(
-  client: SupabaseClient<Database>,
+  client: any,
   { page = 1, limit = 10, search }: FetchCategoriesParams
 ): Promise<FetchCategoriesResponse> {
   let query = client.from("categories").select("*", { count: "exact" });
@@ -34,7 +32,7 @@ export async function fetchCategories(
 }
 
 export async function fetchCategoriesDropdown(
-  client: SupabaseClient<Database>
+  client: any
 ): Promise<CategoryDropdown[]> {
   const { data, error } = await client
     .from("categories")

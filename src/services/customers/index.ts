@@ -10,7 +10,7 @@ import {
 import { queryPaginatedTable } from "@/helpers/queryPaginatedTable";
 
 export async function fetchCustomers(
-  client: SupabaseClient<Database>,
+  client: any,
   { page = 1, limit = 10, search }: FetchCustomersParams
 ): Promise<FetchCustomersResponse> {
   let query = client.from("customers").select("*", { count: "exact" });

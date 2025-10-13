@@ -1,11 +1,9 @@
-import { SupabaseClient } from "@supabase/supabase-js";
-
 import { Database } from "@/types/supabase";
 import { Coupon, FetchCouponsParams, FetchCouponsResponse } from "./types";
 import { queryPaginatedTable } from "@/helpers/queryPaginatedTable";
 
 export async function fetchCoupons(
-  client: SupabaseClient<Database>,
+  client: any,
   { page = 1, limit = 10, search }: FetchCouponsParams
 ): Promise<FetchCouponsResponse> {
   let query = client.from("coupons").select("*", { count: "exact" });

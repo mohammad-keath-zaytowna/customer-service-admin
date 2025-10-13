@@ -2,10 +2,9 @@
 
 import { FaGithub } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { siteUrl } from "@/constants/siteUrl";
 
 import { Button } from "@/components/ui/button";
-import { siteUrl } from "@/constants/siteUrl";
 
 type AuthProvider = "github" | "google";
 
@@ -14,16 +13,13 @@ type Props = {
 };
 
 export default function AuthProviders({ authType = "Login" }: Props) {
-  const supabase = createClientComponentClient();
-
-  // Handle authentication with OAuth providers.
+  // Redirect to backend OAuth start endpoint which initiates provider flow
   const handleAuth = (authProvider: AuthProvider) => {
-    supabase.auth.signInWithOAuth({
-      provider: authProvider,
-      options: {
-        redirectTo: `${siteUrl}/auth/callback`, // Redirect URL after authentication
-      },
-    });
+    const backend = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+    const url = `${backend}/auth/oauth/${authProvider}?redirectTo=${encodeURIComponent(
+      `${siteUrl}/auth/callback`
+    )}`;
+    window.location.assign(url);
   };
 
   return (

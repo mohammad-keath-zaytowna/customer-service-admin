@@ -10,7 +10,7 @@ import TableError from "@/components/shared/table/TableError";
 
 import { getSearchParams } from "@/helpers/getSearchParams";
 import { fetchProducts } from "@/services/products";
-import { createBrowserClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/backendClient";
 import { RowSelectionProps } from "@/types/data-table";
 import { useAuthorization } from "@/hooks/use-authorization";
 

@@ -1,16 +1,21 @@
 "use server";
 
-import { createServerActionClient } from "@/lib/supabase/server-action";
+import axios from "@/helpers/axiosInstance";
 
-export async function exportCustomers() {
-  const supabase = createServerActionClient();
+export async function exportCustomers(token?: string) {
+  try {
+    // The backend exposes GET /api/users which returns { users }
+    const config = token
+      ? { headers: { Authorization: `Bearer ${token}` } }
+      : undefined;
 
-  const { data, error } = await supabase.from("customers").select("*");
+    const res = await axios.get('/api/users', config);
 
-  if (error) {
-    console.error(`Error fetching customers:`, error);
+    // Normalize to { data } same as previous implementation
+    const data = res.data?.users ?? [];
+    return { data };
+  } catch (err: any) {
+    console.error(`Error fetching customers from backend:`, err?.response ?? err?.message ?? err);
     return { error: `Failed to fetch data for customers.` };
   }
-
-  return { data };
 }

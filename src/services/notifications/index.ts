@@ -4,7 +4,7 @@ import { Database } from "@/types/supabase";
 import { Notification } from "./types";
 
 export async function fetchNotifications(
-  client: SupabaseClient<Database>,
+  client: any,
   { staffId }: { staffId: string }
 ): Promise<Notification[]> {
   const { data, error } = await client

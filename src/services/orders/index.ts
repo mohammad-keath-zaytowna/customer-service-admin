@@ -10,7 +10,7 @@ import {
 } from "./types";
 
 export async function fetchOrders(
-  client: SupabaseClient<Database>,
+  client: any,
   {
     page = 1,
     limit = 10,

@@ -10,7 +10,7 @@ import TableSkeleton from "@/components/shared/table/TableSkeleton";
 
 import { getSearchParams } from "@/helpers/getSearchParams";
 import { fetchStaff } from "@/services/staff";
-import { createBrowserClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/backendClient";
 import { useAuthorization } from "@/hooks/use-authorization";
 
 export default function AllStaff() {

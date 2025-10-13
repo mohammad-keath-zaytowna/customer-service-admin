@@ -1,16 +1,11 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 
 import { signupFormSchema } from "@/app/(authentication)/signup/_components/schema";
 import validateFormData from "@/helpers/validateFormData";
 
 export async function POST(request: Request) {
-  const supabase = createRouteHandlerClient({ cookies });
-
   // Get form fields
-  const { name, email, password, confirmPassword, privacy } =
-    await request.json();
+  const { name, email, password, confirmPassword, privacy } = await request.json();
 
   // Server side form validation
   const { errors } = validateFormData(signupFormSchema, {
@@ -26,29 +21,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors }, { status: 401 });
   }
 
-  // Attempt to sign up the user with the provided email and password using Supabase's signUp method.
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        name: name,
-      },
-    },
-  });
+  // Proxy sign-up to our backend which will set an HttpOnly cookie
+  try {
+    const backendRes = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/auth/sign-up`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+    });
 
-  // If there is an error during sign-up, return a JSON response with the error message and a 401 status.
-  if (error) {
-    return NextResponse.json(
-      {
-        errors: {
-          email: error.message,
-        },
-      },
-      { status: 401 }
-    );
+    const payload = await backendRes.json();
+
+    if (!backendRes.ok) {
+      return NextResponse.json({ errors: payload?.errors ?? { email: payload?.message ?? 'Sign-up failed' } }, { status: 401 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Sign-up proxy error', err);
+    return NextResponse.json({ errors: { general: 'Error signing up' } }, { status: 500 });
   }
-
-  // If sign-up is successful, return a JSON response indicating success.
-  return NextResponse.json({ success: true });
 }

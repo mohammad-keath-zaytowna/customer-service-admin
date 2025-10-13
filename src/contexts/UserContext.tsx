@@ -1,22 +1,19 @@
 "use client";
 
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { User } from "@supabase/supabase-js";
+import axios from "@/helpers/axiosInstance";
 
-import { Tables } from "@/types/supabase";
-import { createBrowserClient } from "@/lib/supabase/client";
-
-export type UserRole = Tables<"staff_roles">["name"];
+export type UserRole = string | null;
 
 type UserProfile = {
   name: string | null;
-  image_url: string | null;
+  image_url?: string | null;
   role: UserRole | null;
 };
 
 type UserContextType = {
-  user: User | null;
+  user: any | null;
   profile: UserProfile | null;
   isLoading: boolean;
 };
@@ -28,33 +25,21 @@ const UserContext = createContext<UserContextType>({
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const supabase = createBrowserClient();
   const queryClient = useQueryClient();
+  const [isAuthPolling, setAuthPolling] = useState(false);
 
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [supabase, queryClient]);
+  // Poll or invalidate when needed: we don't have supabase.onAuthStateChange, so
+  // callers should call queryClient.invalidateQueries(['user-profile']) after login/logout.
 
   const { data, isLoading } = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session?.user) {
-        return { user: null, role: null };
+      try {
+        const res = await axios.get('/api/users/me');
+        return { user: res.data?.user ?? null, profile: res.data?.user ?? null };
+      } catch (err) {
+        return { user: null, profile: null };
       }
-
-      const { data: profile } = await supabase.rpc("get_my_profile");
-      return { user: session.user, profile: profile as UserProfile };
     },
     staleTime: Infinity,
   });

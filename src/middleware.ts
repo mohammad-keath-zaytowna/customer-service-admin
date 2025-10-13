@@ -1,13 +1,18 @@
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { createMiddlewareClient } from '@/lib/backendClient';
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  // Use backend shim to get session info
+  let session = null;
+  try {
+    const { data } = await supabase.authGetUser();
+    session = data?.user ? { user: data.user } : null;
+  } catch (e) {
+    session = null;
+  }
 
   const authRoutes = [
     "/login",

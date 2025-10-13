@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import FetchDropdownContainer from "@/components/shared/FetchDropdownContainer";
 
 import { sortToParamsMap, getSortFromParams } from "./sortParams";
-import { createBrowserClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/backendClient";
 import { fetchCategoriesDropdown } from "@/services/categories";
 
 export default function ProductFilters() {
