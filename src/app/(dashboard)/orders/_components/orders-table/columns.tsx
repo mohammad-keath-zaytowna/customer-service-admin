@@ -30,34 +30,40 @@ export const getColumns = ({
 }) => {
   const columns: ColumnDef<Order>[] = [
     {
+      header: "user",
+      cell: ({ row }) => (
+        <span className="block max-w-52 truncate">
+          {row.original.userId?.name}
+        </span>
+      ),
+    },
+    {
       header: "invoice no",
       cell: ({ row }) => row.original.invoice_no,
     },
     {
       header: "order time",
       cell: ({ row }) =>
-        `${format(row.original.order_time, "PP")} ${format(
-          row.original.order_time,
+        `${format(new Date(row.original.createdAt), "PP")} ${format(
+          new Date(row.original.createdAt),
           "p"
         )}`,
     },
     {
       header: "customer name",
       cell: ({ row }) => (
-        <span className="block max-w-52 truncate">
-          {row.original.customers?.name}
-        </span>
+        <span className="block max-w-52 truncate">{row.original.name}</span>
       ),
     },
     {
-      header: "method",
+      header: "address",
       cell: ({ row }) => (
-        <span className="capitalize">{row.original.payment_method}</span>
+        <span className="capitalize">{row.original.address}</span>
       ),
     },
     {
       header: "amount",
-      cell: ({ row }) => formatAmount(row.original.total_amount),
+      cell: ({ row }) => formatAmount(row.original.price),
     },
     {
       header: "status",
@@ -75,12 +81,18 @@ export const getColumns = ({
       },
     },
     {
+      header: "details",
+      cell: ({ row }) => (
+        <span className="capitalize">{row.original.details}</span>
+      ),
+    },
+    {
       header: "invoice",
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-1">
             {hasPermission("orders", "canPrint") && (
-              <PrintInvoiceButton orderId={row.original.id} />
+              <PrintInvoiceButton orderId={row.original._id} />
             )}
 
             <Tooltip>
@@ -91,7 +103,7 @@ export const getColumns = ({
                   className="text-foreground"
                   asChild
                 >
-                  <Link href={`/orders/${row.original.id}`}>
+                  <Link href={`/orders/${row.original._id}`}>
                     <ZoomIn className="size-5" />
                   </Link>
                 </Button>
@@ -117,7 +129,7 @@ export const getColumns = ({
             toastSuccessMessage="Order status updated successfully."
             queryKey="orders"
             onValueChange={(value) =>
-              changeOrderStatus(row.original.id, value as OrderStatus)
+              changeOrderStatus(row.original._id, value as OrderStatus)
             }
           >
             <SelectItem value="pending">Pending</SelectItem>

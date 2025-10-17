@@ -53,14 +53,14 @@ export default function Profile() {
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link
               href="/edit-profile"
               className="w-full justify-start py-3.5 pl-3 pr-8 tracking-wide !cursor-pointer"
             >
               <Settings className="mr-3 size-5" /> Edit Profile
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
 
           <form action="/auth/sign-out" method="post">
             <DropdownMenuItem asChild>

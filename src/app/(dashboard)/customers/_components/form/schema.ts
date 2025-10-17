@@ -9,11 +9,7 @@ export const customerFormSchema = z.object({
     .string()
     .min(1, { message: "Customer email is required" })
     .email({ message: "Invalid email address" }),
-  phone: z
-    .string()
-    .regex(/^\+?[0-9]\d{1,14}$/, { message: "Invalid phone number format" })
-    .optional()
-    .or(z.literal("")),
+  blocked: z.boolean().optional(),
 });
 
 export type CustomerFormData = z.infer<typeof customerFormSchema>;

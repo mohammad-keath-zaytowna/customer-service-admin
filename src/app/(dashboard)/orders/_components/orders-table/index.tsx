@@ -36,7 +36,7 @@ export default function RecentOrders() {
       endDate,
     ],
     queryFn: () =>
-      fetchOrders(createBrowserClient(), {
+      fetchOrders({
         page,
         limit,
         search,

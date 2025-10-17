@@ -16,9 +16,9 @@ export default async function Notifications() {
   const user = await getUser();
   const staffId = user?.id;
 
-  if (!staffId) {
-    redirect("/login");
-  }
+  // if (!staffId) {
+  //   redirect("/login");
+  // }
 
   return (
     <div className="relative">

@@ -7,21 +7,13 @@ import PageTitle from "@/components/shared/PageTitle";
 import Typography from "@/components/ui/typography";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
 import { getDiscount } from "@/helpers/getDiscount";
 import { OrderBadgeVariants } from "@/constants/badge";
 import { fetchOrderDetails } from "@/services/orders";
-import { createServerClient } from "@/lib/supabase/server";
 import { InvoiceActions } from "./_components/InvoiceActions";
+import { BackendURL } from "@/constants/siteUrl";
 
 type PageParams = {
   params: {
@@ -33,11 +25,8 @@ export async function generateMetadata({
   params: { id },
 }: PageParams): Promise<Metadata> {
   try {
-    const { order } = await fetchOrderDetails(createServerClient(), {
-      id,
-    });
-
-    return { title: `Order #${order.invoice_no}` };
+    const { order } = await fetchOrderDetails({ id });
+    return { title: `Order #${order._id}` };
   } catch (e) {
     return { title: "Order not found" };
   }
@@ -45,15 +34,14 @@ export async function generateMetadata({
 
 export default async function Order({ params: { id } }: PageParams) {
   try {
-    const { order } = await fetchOrderDetails(createServerClient(), {
-      id,
-    });
+    const { order } = await fetchOrderDetails({ id });
 
     return (
       <section>
         <PageTitle className="print:hidden">Invoice</PageTitle>
 
         <Card className="mb-8 text-muted-foreground p-4 lg:p-6 print:border-none print:bg-white print:mb-0">
+          {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-x-4 gap-y-6 print:flex-row print:justify-between">
             <div className="flex flex-col">
               <Typography
@@ -77,6 +65,7 @@ export default async function Order({ params: { id } }: PageParams) {
               </div>
             </div>
 
+            {/* Company Info */}
             <div className="flex flex-col text-sm gap-y-0.5 md:text-right print:text-right print:text-black">
               <div className="flex items-center md:justify-end gap-x-1 print:justify-end">
                 <FaBagShopping className="size-6 text-primary mb-1 flex-shrink-0" />
@@ -85,25 +74,19 @@ export default async function Order({ params: { id } }: PageParams) {
                   variant="h2"
                   className="text-card-foreground print:text-black"
                 >
-                  Zorvex
+                  {order.userId?.name || "Store"}
                 </Typography>
               </div>
 
-              <Typography component="p">
-                2 Lawson Avenue, California, United States
-              </Typography>
-              <Typography component="p">+1 (212) 456-7890</Typography>
-              <Typography component="p" className="break-words">
-                ecommerceadmin@gmail.com
-              </Typography>
-              <Typography component="p">
-                ecommerce-admin-board.vercel.app
-              </Typography>
+              {order.address && (
+                <Typography component="p">{order.address}</Typography>
+              )}
             </div>
           </div>
 
           <Separator className="my-6 print:bg-print-border" />
 
+          {/* Invoice Meta Info */}
           <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-10 print:flex-row print:justify-between print:text-black">
             <div>
               <Typography
@@ -113,9 +96,10 @@ export default async function Order({ params: { id } }: PageParams) {
               >
                 date
               </Typography>
-
               <Typography className="text-sm">
-                {format(order.order_time, "PPP")}
+                {order.createdAt
+                  ? format(new Date(order.createdAt), "PPP")
+                  : "-"}
               </Typography>
             </div>
 
@@ -127,7 +111,6 @@ export default async function Order({ params: { id } }: PageParams) {
               >
                 invoice no
               </Typography>
-
               <Typography className="text-sm">#{order.invoice_no}</Typography>
             </div>
 
@@ -141,116 +124,50 @@ export default async function Order({ params: { id } }: PageParams) {
               </Typography>
 
               <div className="flex flex-col text-sm gap-y-0.5">
-                <Typography component="p">{order.customers.name}</Typography>
-                <Typography component="p" className="break-words">
-                  {order.customers.email}
-                </Typography>
-                {order.customers.phone && (
-                  <Typography component="p">{order.customers.phone}</Typography>
+                <Typography component="p">{order.name}</Typography>
+                {order.phone && (
+                  <Typography component="p">{order.phone}</Typography>
                 )}
-                {order.customers.address && (
+                {order.address && (
                   <Typography component="p" className="max-w-80">
-                    {order.customers.address}
+                    {order.address}
                   </Typography>
                 )}
               </div>
             </div>
           </div>
 
-          <div className="border rounded-md overflow-hidden mb-10 print:text-black print:border-print-border">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50 dark:bg-transparent print:border-b-print-border">
-                  <TableHead className="uppercase h-10 whitespace-nowrap print:text-black">
-                    SR.
-                  </TableHead>
-                  <TableHead className="uppercase h-10 whitespace-nowrap print:text-black">
-                    product title
-                  </TableHead>
-                  <TableHead className="uppercase h-10 whitespace-nowrap text-center print:text-black">
-                    quantity
-                  </TableHead>
-                  <TableHead className="uppercase h-10 whitespace-nowrap text-center print:text-black">
-                    item price
-                  </TableHead>
-                  <TableHead className="uppercase h-10 whitespace-nowrap text-right print:text-black">
-                    amount
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
+          {/* Product Info */}
+          <div className="mb-10 print:text-black">
+            <Typography
+              variant="h3"
+              className="font-semibold text-card-foreground mb-3 print:text-black"
+            >
+              {order.name}
+            </Typography>
 
-              <TableBody>
-                {order.order_items.map((orderItem, index) => (
-                  <TableRow
-                    key={`order-item-${index}`}
-                    className="hover:bg-transparent print:border-b-print-border"
-                  >
-                    <TableCell className="py-3 print:font-normal print:text-black">
-                      {index + 1}
-                    </TableCell>
-                    <TableCell className="font-medium py-3 px-6 text-card-foreground print:font-normal print:text-black">
-                      {orderItem.products.name}
-                    </TableCell>
-                    <TableCell className="font-semibold py-3 text-center print:font-normal print:text-black">
-                      {orderItem.quantity}
-                    </TableCell>
-                    <TableCell className="font-semibold py-3 text-center print:font-normal print:text-black">
-                      ${orderItem.unit_price.toFixed(2)}
-                    </TableCell>
-                    <TableCell className="font-semibold py-3 text-primary text-right print:text-black">
-                      ${(orderItem.quantity * orderItem.unit_price).toFixed(2)}
-                    </TableCell>
-                  </TableRow>
+            {order.details && (
+              <Typography className="text-gray-700 leading-relaxed mb-6 print:text-black">
+                {order.details}
+              </Typography>
+            )}
+
+            {order.images?.length > 0 && (
+              <div className="grid grid-cols-2 gap-4">
+                {order.images.map((img: string, idx: number) => (
+                  <img
+                    key={idx}
+                    src={`${BackendURL}${img}`}
+                    alt={`Image ${idx + 1}`}
+                    className="w-full h-64 object-cover rounded-md border"
+                  />
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            )}
           </div>
 
-          <div className="bg-background rounded-lg flex flex-col gap-4 md:justify-between md:flex-row p-6 md:px-8 mb-4 print:flex-row print:justify-between print:mb-0 print:p-0 print:px-2 print:bg-white">
-            <div>
-              <Typography
-                component="h4"
-                className="font-medium text-sm uppercase mb-1 tracking-wide print:text-black"
-              >
-                payment method
-              </Typography>
-
-              <Typography className="text-base capitalize font-semibold text-card-foreground tracking-wide print:text-black">
-                {order.payment_method}
-              </Typography>
-            </div>
-
-            <div>
-              <Typography
-                component="h4"
-                className="font-medium text-sm uppercase mb-1 tracking-wide print:text-black"
-              >
-                shipping cost
-              </Typography>
-
-              <Typography className="text-base capitalize font-semibold text-card-foreground tracking-wide print:text-black">
-                ${order.shipping_cost.toFixed(2)}
-              </Typography>
-            </div>
-
-            <div>
-              <Typography
-                component="h4"
-                className="font-medium text-sm uppercase mb-1 tracking-wide print:text-black"
-              >
-                discount
-              </Typography>
-
-              <Typography className="text-base capitalize font-semibold text-card-foreground tracking-wide print:text-black">
-                $
-                {getDiscount({
-                  totalAmount: order.total_amount,
-                  shippingCost: order.shipping_cost,
-                  coupon: order.coupons,
-                })}
-              </Typography>
-            </div>
-
+          {/* Payment Section */}
+          <div className="bg-background rounded-lg flex flex-col gap-4 md:justify-end md:flex-row p-6 md:px-8 mb-4 print:flex-row print:justify-between print:mb-0 print:p-0 print:px-2 print:bg-white">
             <div>
               <Typography
                 component="h4"
@@ -258,9 +175,8 @@ export default async function Order({ params: { id } }: PageParams) {
               >
                 total amount
               </Typography>
-
               <Typography className="text-xl capitalize font-semibold tracking-wide text-primary">
-                ${order.total_amount.toFixed(2)}
+                JOD{order.price?.toFixed(2)}
               </Typography>
             </div>
           </div>

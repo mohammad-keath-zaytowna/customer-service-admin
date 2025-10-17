@@ -37,7 +37,6 @@ import { Metadata } from "next";
 
 import PageTitle from "@/components/shared/PageTitle";
 import AllCustomers from "./customers/_components/customers-table";
-import CustomerActions from "./customers/_components/CustomerActions";
 import CustomerFilters from "./customers/_components/CustomerFilters";
 
 export const metadata: Metadata = {
@@ -49,7 +48,6 @@ export default async function CustomersPage() {
     <section>
       <PageTitle>Customers</PageTitle>
 
-      <CustomerActions />
       <CustomerFilters />
       <AllCustomers />
     </section>

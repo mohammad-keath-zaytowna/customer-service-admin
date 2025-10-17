@@ -20,7 +20,7 @@ import {
   FormSheetHeader,
   FormSheetFooter,
 } from "@/components/shared/form/FormSheet";
-import { FormTextInput } from "@/components/shared/form";
+import { FormSwitch, FormTextInput } from "@/components/shared/form";
 import { FormSubmitButton } from "@/components/shared/form/FormSubmitButton";
 
 import { customerFormSchema, CustomerFormData } from "./schema";
@@ -64,7 +64,7 @@ export default function CustomerFormSheet({
     defaultValues: {
       name: "",
       email: "",
-      phone: "",
+      blocked: false,
       ...initialData,
     },
   });
@@ -130,11 +130,10 @@ export default function CustomerFormSheet({
                     placeholder="Customer Email"
                   />
 
-                  <FormTextInput
+                  <FormSwitch
                     control={form.control}
-                    name="phone"
-                    label="Customer Phone"
-                    placeholder="Customer Phone"
+                    name="blocked"
+                    label="Blocked"
                   />
                 </div>
               </FormSheetBody>

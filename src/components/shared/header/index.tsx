@@ -13,7 +13,6 @@ export default function Header() {
 
           <div className="flex items-center gap-x-2 ml-auto">
             <ThemeToggle />
-            <Notifications />
             <Profile />
           </div>
         </div>

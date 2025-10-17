@@ -26,7 +26,6 @@ import { FormSubmitButton } from "@/components/shared/form/FormSubmitButton";
 import { loginFields } from "./fields";
 import { loginFormSchema } from "./schema";
 import AuthProviders from "@/components/shared/auth/AuthProviders";
-import { useUser } from "@/contexts/UserContext";
 
 type FormData = z.infer<typeof loginFormSchema>;
 
@@ -34,7 +33,6 @@ export default function LoginForm() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { refetch } = useUser();
 
   const form = useForm<FormData>({
     resolver: zodResolver(loginFormSchema),
@@ -66,7 +64,6 @@ export default function LoginForm() {
         axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       }
 
-      console.log("login response", res?.data);
       toast.success("Login Success!", {
         description: searchParams.get("redirect_to")
           ? "Redirecting to your page..."

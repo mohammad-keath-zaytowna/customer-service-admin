@@ -1,69 +1,80 @@
-import { SupabaseClient } from "@supabase/supabase-js";
-
-import { Database } from "@/types/supabase";
 import {
   Customer,
   FetchCustomersParams,
   FetchCustomersResponse,
   CustomerOrder,
 } from "./types";
-import { queryPaginatedTable } from "@/helpers/queryPaginatedTable";
+import axiosInstance from "@/helpers/axiosInstance";
 
-export async function fetchCustomers(
-  client: any,
-  { page = 1, limit = 10, search }: FetchCustomersParams
-): Promise<FetchCustomersResponse> {
-  let query = client.from("customers").select("*", { count: "exact" });
+export async function fetchCustomers({
+  page = 1,
+  limit = 10,
+  search,
+}: FetchCustomersParams): Promise<FetchCustomersResponse> {
+  try {
+    const { data } = await axiosInstance.get("/api/users", {
+      params: { page, limit, search },
+    });
 
-  if (search) {
-    query = query.or(
-      `name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`
-    );
+    // expected backend response:
+    // { data: [...], total: number, currentPage: number, totalPages: number }
+    return data;
+  } catch (error: any) {
+    console.error("Failed to fetch customers:", error.message);
+    throw new Error("Failed to fetch customers");
   }
-
-  query = query.order("created_at", { ascending: false });
-
-  const paginatedCustomers = await queryPaginatedTable<Customer, "customers">({
-    name: "customers",
-    page,
-    limit,
-    query,
-  });
-
-  return paginatedCustomers;
 }
 
-export async function fetchCustomerOrders(
-  client: SupabaseClient<Database>,
-  { id }: { id: string }
-) {
-  const selectQuery = `
-    id,
-    invoice_no,
-    order_time,
-    payment_method,
-    total_amount,
-    status,
-    customers(name, address, phone)
-  `;
+export async function fetchCustomerOrders({
+  id,
+  page,
+  limit,
+}: {
+  id: string;
+  page?: number;
+  limit?: number;
+}) {
+  try {
+    const headers: Record<string, string> = {};
 
-  const { data, error } = await client
-    .from("orders")
-    .select(selectQuery)
-    .eq("customer_id", id)
-    .order("created_at", { ascending: false });
+    if (typeof window === "undefined") {
+      try {
+        // dynamic import so this file can still be bundled for the client
+        const { cookies } = await import("next/headers");
+        const token = cookies().get("token")?.value;
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+      } catch (e) {
+        // ignore if next/headers isn't available for some reason
+      }
+    }
 
-  if (error) {
-    console.error(error.message);
-    throw new Error(`Failed to fetch customer orders: ${error.message}`);
-  }
+    const resp = await axiosInstance.get(`/api/orders/all`, {
+      params: { page, limit, userId: id },
+      headers,
+    });
 
-  if (!data) {
-    console.error("Failed to fetch customer orders");
+    const payload = resp.data;
+
+    // Normalize different backend response shapes:
+    // - admin `/all` returns { data: [...], pagination: {...} }
+    // - `/my-orders` returns { orders: [...] }
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload.data)) return payload.data;
+    if (Array.isArray(payload.orders)) return payload.orders;
+
+    // fallback: if shape is unexpected but contains an object with data key
+    return payload.data || payload.orders || [];
+  } catch (error: any) {
+    // If unauthorized, surface a clearer error so callers can handle it.
+    if (error?.response?.status === 401 || error?.response?.status === 403) {
+      console.error(
+        "Unauthorized when fetching customer orders:",
+        error.response?.data || error.message
+      );
+      throw new Error("Unauthorized");
+    }
+
+    console.error("Failed to fetch customer orders:", error.message);
     throw new Error("Failed to fetch customer orders");
   }
-
-  return {
-    customerOrders: data as CustomerOrder[],
-  };
 }

@@ -21,7 +21,9 @@ export async function POST(request: Request) {
   // Proxy sign-in to our backend which will set an HttpOnly cookie
   try {
     const backendRes = await fetch(
-      `${process.env.BACKEND_URL || "http://localhost:5000"}/auth/sign-in`,
+      `${
+        process.env.BACKEND_URL || "http://localhost:5000"
+      }/api/users/auth/sign-in`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

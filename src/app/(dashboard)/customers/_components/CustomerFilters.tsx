@@ -36,7 +36,7 @@ export default function CustomerFilters() {
       >
         <Input
           type="search"
-          placeholder="Search by name, phone or email"
+          placeholder="Search by name or email"
           className="h-12 md:basis-1/2"
           value={search}
           onChange={(e) => setSearch(e.target.value)}

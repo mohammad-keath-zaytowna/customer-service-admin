@@ -16,14 +16,12 @@ type UserContextType = {
   user: any | null;
   profile: UserProfile | null;
   isLoading: boolean;
-  refetch: () => Promise<void>;
 };
 
 const UserContext = createContext<UserContextType>({
   user: null,
   profile: null,
   isLoading: true,
-  refetch: async () => Promise.resolve(),
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -51,9 +49,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     user: data?.user ?? null,
-    profile: data?.profile ?? null,
+    profile: data?.user ?? null,
     isLoading,
-    refetch,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

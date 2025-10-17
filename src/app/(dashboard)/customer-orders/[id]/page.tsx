@@ -7,7 +7,6 @@ import Typography from "@/components/ui/typography";
 import PageTitle from "@/components/shared/PageTitle";
 
 import CustomerOrdersTable from "./_components/Table";
-import { createServerClient } from "@/lib/supabase/server";
 import { fetchCustomerOrders } from "@/services/customers";
 
 type PageParams = {
@@ -20,7 +19,7 @@ export async function generateMetadata({
   params: { id },
 }: PageParams): Promise<Metadata> {
   try {
-    const { customerOrders } = await fetchCustomerOrders(createServerClient(), {
+    const customerOrders = await fetchCustomerOrders({
       id,
     });
 
@@ -28,7 +27,7 @@ export async function generateMetadata({
       return { title: "No customer orders" };
     }
 
-    return { title: customerOrders[0].customers.name };
+    return { title: customerOrders[0].userId.name + " Orders" };
   } catch (e) {
     return { title: "Customer not found" };
   }
@@ -36,8 +35,10 @@ export async function generateMetadata({
 
 export default async function CustomerOrders({ params: { id } }: PageParams) {
   try {
-    const { customerOrders } = await fetchCustomerOrders(createServerClient(), {
+    const customerOrders = await fetchCustomerOrders({
       id,
+      page: 1,
+      limit: 10,
     });
 
     return (

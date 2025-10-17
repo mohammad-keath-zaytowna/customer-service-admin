@@ -2,7 +2,7 @@
 
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { getColumns } from "./columns";
+import { getColumns } from "@/app/(dashboard)/orders/_components/orders-table/columns";
 import DataTable from "@/components/shared/table/DataTable";
 import { DataTableProps } from "@/types/data-table";
 import { CustomerOrder } from "@/services/customers/types";

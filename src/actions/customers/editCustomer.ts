@@ -14,6 +14,7 @@ export async function editCustomer(
     name: formData.get("name"),
     email: formData.get("email"),
     phone: formData.get("phone"),
+    blocked: formData.get("blocked") === "true",
   });
 
   if (!parsedData.success) {
@@ -25,28 +26,45 @@ export async function editCustomer(
   }
 
   const customerData = parsedData.data;
+  const headers: Record<string, string> = {};
+  const { cookies } = await import("next/headers");
+  const token = cookies().get("token")?.value;
+  if (token) headers["Authorization"] = `Bearer ${token}`;
 
   try {
-    const res = await axiosInstance.patch(`/api/users/${customerId}`, {
-      name: customerData.name,
-      email: customerData.email,
-      phone: customerData.phone,
-    });
+    const res = await axiosInstance.patch(
+      `/api/users/${customerId}`,
+      {
+        name: customerData.name,
+        email: customerData.email,
+        blocked: customerData.blocked,
+      },
+      {
+        headers,
+      }
+    );
 
+    revalidatePath("/");
     if (res.status !== 200) {
       console.error("Backend update failed:", res.data);
       return { dbError: "Something went wrong. Please try again later." };
     }
 
     const updatedCustomer = res.data.user;
-
+    revalidatePath("/");
     revalidatePath("/customers");
     revalidatePath(`/customer-orders/${updatedCustomer.id}`);
 
     return { success: true, customer: updatedCustomer };
   } catch (err: any) {
-    console.error("Error updating customer:", err?.response?.data || err.message || err);
-    const message = err?.response?.data?.message || err?.message || "Could not update the customer.";
+    console.error(
+      "Error updating customer:",
+      err?.response?.data || err.message || err
+    );
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      "Could not update the customer.";
     return { dbError: message };
   }
 }

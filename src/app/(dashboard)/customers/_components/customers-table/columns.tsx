@@ -19,6 +19,7 @@ import { TooltipWrapper } from "@/components/shared/table/TableActionTooltip";
 import { editCustomer } from "@/actions/customers/editCustomer";
 import { deleteCustomer } from "@/actions/customers/deleteCustomer";
 import { HasPermission } from "@/hooks/use-authorization";
+import { Switch } from "@/components/ui/switch";
 
 const handleDemoDelete = () => {
   toast.error("Sorry, this feature is not allowed in demo mode", {
@@ -36,13 +37,13 @@ export const getColumns = ({
       header: "id",
       cell: ({ row }) => (
         <Typography className="uppercase">
-          {row.original.id.slice(-4)}
+          {row.original._id.slice(-4)}
         </Typography>
       ),
     },
     {
       header: "joining date",
-      cell: ({ row }) => format(row.original.created_at, "PP"),
+      cell: ({ row }) => format(new Date(row.original.createdAt), "PP"),
     },
     {
       header: "name",
@@ -57,12 +58,18 @@ export const getColumns = ({
       ),
     },
     {
-      header: () => <span className="block text-center">phone</span>,
-      id: "phone",
+      header: "Blocked",
       cell: ({ row }) => (
-        <Typography className="block text-center">
-          {row.original.phone || "—"}
-        </Typography>
+        <Switch
+          checked={row.original.blocked}
+          // onCheckedChange={async (blocked) => {
+          //   const formData = new FormData();
+          //   formData.append("blocked", String(blocked));
+          //   formData.append("name", row.original.name);
+          //   formData.append("email", row.original.email);
+          //   await editCustomer(row.original._id, formData);
+          // }}
+        />
       ),
     },
     {
@@ -78,7 +85,7 @@ export const getColumns = ({
                 variant="ghost"
                 className="text-foreground"
               >
-                <Link href={`/customer-orders/${row.original.id}`}>
+                <Link href={`/customer-orders/${row.original._id}`}>
                   <ZoomIn className="size-5" />
                 </Link>
               </Button>
@@ -86,7 +93,7 @@ export const getColumns = ({
 
             {hasPermission("customers", "canEdit") && (
               <CustomerFormSheet
-                key={row.original.id}
+                key={row.original._id}
                 title="Update Customers"
                 description="Update necessary customer information here"
                 submitButtonText="Update Customer"
@@ -94,9 +101,9 @@ export const getColumns = ({
                 initialData={{
                   name: row.original.name,
                   email: row.original.email,
-                  phone: row.original.phone ?? "",
+                  blocked: row.original.blocked,
                 }}
-                action={(formData) => editCustomer(row.original.id, formData)}
+                action={(formData) => editCustomer(row.original._id, formData)}
               >
                 <SheetTooltip content="Edit Customer">
                   <PenSquare className="size-5" />
@@ -123,7 +130,7 @@ export const getColumns = ({
               //   actionButtonText="Delete Customer"
               //   toastSuccessMessage={`Customer "${row.original.name}" deleted successfully!`}
               //   queryKey="customers"
-              //   action={() => deleteCustomer(row.original.id)}
+              //   action={() => deleteCustomer(row.original._id)}
               // >
               //   <Trash2 className="size-5" />
               // </TableActionAlertDialog>

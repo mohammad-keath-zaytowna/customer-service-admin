@@ -1,15 +1,25 @@
-import { createMiddlewareClient } from '@/lib/backendClient';
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
-
   // Use backend shim to get session info
   let session = null;
   try {
-    const { data } = await supabase.authGetUser();
-    session = data?.user ? { user: data.user } : null;
+    const response = await fetch(
+      `${process.env.BACKEND_URL || "http://localhost:5000"}/api/users/me`,
+      {
+        headers: {
+          // Pass cookies if your backend uses them for auth
+          cookie: req.headers.get("cookie") || "",
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      session = data?.user ? { user: data.user } : null;
+    }
   } catch (e) {
     session = null;
   }

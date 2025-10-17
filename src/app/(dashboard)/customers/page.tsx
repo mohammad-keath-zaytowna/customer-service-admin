@@ -14,7 +14,6 @@ export default async function CustomersPage() {
     <section>
       <PageTitle>Customers</PageTitle>
 
-      <CustomerActions />
       <CustomerFilters />
       <AllCustomers />
     </section>

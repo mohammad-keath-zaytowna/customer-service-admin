@@ -1,4 +1,3 @@
-export { default as FormCategoryInput } from "./FormCategoryInput";
 export { default as FormDatetimeInput } from "./FormDatetimeInput";
 export { default as FormDiscountInput } from "./FormDiscountInput";
 export { default as FormSwitch } from "./FormSwitch";
