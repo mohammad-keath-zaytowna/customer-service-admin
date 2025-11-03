@@ -20,7 +20,7 @@ import { Order, OrderStatus } from "@/services/orders/types";
 import { SkeletonColumn } from "@/types/skeleton";
 
 import { changeOrderStatus } from "@/actions/orders/changeOrderStatus";
-import { PrintInvoiceButton } from "./PrintInvoiceButton";
+import { PrintInvoiceButton } from "../../../orders/_components/orders-table/PrintInvoiceButton";
 import { HasPermission } from "@/hooks/use-authorization";
 
 export const getColumns = ({

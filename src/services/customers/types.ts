@@ -19,7 +19,7 @@ export interface FetchCustomersResponse {
 
 export type CustomerOrder = Pick<
   SBOrder,
-  | "id"
+  | "_id"
   | "invoice_no"
   | "order_time"
   | "payment_method"

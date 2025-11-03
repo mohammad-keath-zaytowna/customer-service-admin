@@ -9,11 +9,9 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
-import { getDiscount } from "@/helpers/getDiscount";
 import { OrderBadgeVariants } from "@/constants/badge";
 import { fetchOrderDetails } from "@/services/orders";
 import { InvoiceActions } from "./_components/InvoiceActions";
-import { BackendURL } from "@/constants/siteUrl";
 
 type PageParams = {
   params: {
@@ -157,9 +155,9 @@ export default async function Order({ params: { id } }: PageParams) {
                 {order.images.map((img: string, idx: number) => (
                   <img
                     key={idx}
-                    src={`${BackendURL}${img}`}
+                    src={img}
                     alt={`Image ${idx + 1}`}
-                    className="w-full h-64 object-cover rounded-md border"
+                    className=" h-64 object-contain rounded-md border"
                   />
                 ))}
               </div>

@@ -4,10 +4,10 @@ import { DownloadCloud, Printer, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { usePdfDownload } from "@/hooks/use-pdf-download";
-import { OrderDetails } from "@/services/orders/types";
+import { Order } from "@/services/orders/types";
 import InvoicePdfTemplate from "./InvoicePdfTemplate";
 
-export function InvoiceActions({ order }: { order: OrderDetails }) {
+export function InvoiceActions({ order }: { order: Order }) {
   const { isLoading, downloadTemplate } = usePdfDownload();
 
   const printInvoice = () => {

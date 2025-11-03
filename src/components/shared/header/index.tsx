@@ -2,7 +2,6 @@ import Container from "@/components/ui/container";
 import Profile from "@/components/shared/header/Profile";
 import NavMenuToggle from "@/components/shared/header/NavMenuToggle";
 import ThemeToggle from "@/components/shared/header/ThemeToggle";
-import Notifications from "@/components/shared/notifications/Notifications";
 
 export default function Header() {
   return (

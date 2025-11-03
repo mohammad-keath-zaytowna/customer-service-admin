@@ -5,12 +5,12 @@ import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { getColumns } from "@/app/(dashboard)/orders/_components/orders-table/columns";
 import DataTable from "@/components/shared/table/DataTable";
 import { DataTableProps } from "@/types/data-table";
-import { CustomerOrder } from "@/services/customers/types";
 import { useAuthorization } from "@/hooks/use-authorization";
+import { Order } from "@/services/orders/types";
 
 export default function CustomerOrdersTable({
   data,
-}: Omit<DataTableProps<CustomerOrder>, "columns" | "pagination">) {
+}: Omit<DataTableProps<Order>, "columns" | "pagination">) {
   const { hasPermission } = useAuthorization();
   const columns = getColumns({ hasPermission });
 

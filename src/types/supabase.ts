@@ -134,12 +134,16 @@ export type Database = {
       customers: {
         Row: {
           address: string | null;
-          created_at: string;
+          createdAt: string;
           email: string;
-          id: string;
+          _id: string;
           name: string;
           phone: string | null;
-          updated_at: string;
+          updatedAt: string;
+          blocked: boolean;
+          userId: {
+            name: string;
+          };
         };
         Insert: {
           address?: string | null;
@@ -246,7 +250,14 @@ export type Database = {
           coupon_id: string | null;
           created_at: string;
           customer_id: string;
-          id: string;
+          _id: string;
+          address: string;
+          createdAt: string;
+          phone: string;
+          name: string;
+          details: string | null;
+          images: string[];
+          price: number;
           invoice_no: string;
           order_time: string;
           payment_method: Database["public"]["Enums"]["payment_method_enum"];
@@ -254,6 +265,10 @@ export type Database = {
           status: Database["public"]["Enums"]["order_status_enum"];
           total_amount: number;
           updated_at: string;
+          userId: {
+            _id: string;
+            name: string;
+          };
         };
         Insert: {
           coupon_id?: string | null;
