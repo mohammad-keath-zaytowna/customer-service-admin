@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/helpers/axiosInstance";
+import { usePathname, useRouter } from "next/navigation";
 
 export type UserRole = string | null;
 
@@ -27,6 +28,14 @@ const UserContext = createContext<UserContextType>({
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const [isAuthPolling, setAuthPolling] = useState(false);
+  const router = useRouter();
+  const path = usePathname();
+  const authpaths = [
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/update-password",
+  ];
 
   // Poll or invalidate when needed: we don't have supabase.onAuthStateChange, so
   // callers should call queryClient.invalidateQueries(['user-profile']) after login/logout.
@@ -36,6 +45,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       try {
         const res = await axios.get("/api/users/me");
+        console.log("response me", res);
+        if (!res.data?.user && !authpaths.includes(path)) {
+          router.push("/login");
+        } else if (res.data?.user && authpaths.includes(path)) {
+          router.push("/");
+        }
         return {
           user: res.data?.user ?? null,
           profile: res.data?.user ?? null,
