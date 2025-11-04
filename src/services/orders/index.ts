@@ -36,18 +36,11 @@ export async function fetchOrders({
 }
 
 export async function fetchOrderDetails({ id }: { id: string }) {
-  const headers: Record<string, string> = {};
-  if (typeof window === "undefined") {
-    try {
-      // dynamic import so this file can still be bundled for the client
-      const { cookies } = await import("next/headers");
-      const token = cookies().get("token")?.value;
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-    } catch (e) {
-      // ignore if next/headers isn't available for some reason
-    }
-  }
-  const { data } = await axiosInstance.get(`/api/orders/${id}`, { headers });
-
+  const token = localStorage.getItem("token");
+  const { data } = await axiosInstance.get(`/api/orders/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return data as { order: Order };
 }

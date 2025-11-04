@@ -1,5 +1,6 @@
+"use client";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, useParams, useSearchParams } from "next/navigation";
 import { FaBagShopping } from "react-icons/fa6";
 import { format } from "date-fns";
 
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { OrderBadgeVariants } from "@/constants/badge";
 import { fetchOrderDetails } from "@/services/orders";
 import { InvoiceActions } from "./_components/InvoiceActions";
+import { useEffect, useState } from "react";
 
 type PageParams = {
   params: {
@@ -19,20 +21,33 @@ type PageParams = {
   };
 };
 
-export async function generateMetadata({
-  params: { id },
-}: PageParams): Promise<Metadata> {
+export default function Order() {
   try {
-    const { order } = await fetchOrderDetails({ id });
-    return { title: `Order #${order._id}` };
-  } catch (e) {
-    return { title: "Order not found" };
-  }
-}
+    const [order, setOrder] = useState<any>(null);
+    const { id } = useParams();
+    const searchParams = useSearchParams();
+    const isPrintMode = searchParams.get("print") === "true";
+    useEffect(() => {
+      async function load() {
+        const data = await fetchOrderDetails({ id });
+        setOrder(data.order);
+      }
+      load();
+    }, [id]);
 
-export default async function Order({ params: { id } }: PageParams) {
-  try {
-    const { order } = await fetchOrderDetails({ id });
+    useEffect(() => {
+      // When in print mode and data is ready, trigger print automatically
+      if (isPrintMode && order) {
+        // Wait a tiny bit for images/layout
+        setTimeout(() => {
+          window.print();
+        }, 300);
+      }
+    }, [isPrintMode, order]);
+
+    if (!order) {
+      return <div>Loading...</div>;
+    }
 
     return (
       <section>
@@ -184,6 +199,7 @@ export default async function Order({ params: { id } }: PageParams) {
       </section>
     );
   } catch (e) {
+    console.log("error", e);
     return notFound();
   }
 }

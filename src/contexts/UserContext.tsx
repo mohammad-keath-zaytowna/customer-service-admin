@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/helpers/axiosInstance";
 import { usePathname, useRouter } from "next/navigation";
 import { set } from "date-fns";
+import axiosInstance from "@/helpers/axiosInstance";
 
 export type UserRole = string | null;
 
@@ -49,12 +50,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       try {
         const res = await axios.get("/api/users/me");
-        console.log("response me", res);
         if (!res.data?.user && !authpaths.includes(path)) {
           router.push("/login");
         } else if (res.data?.user && authpaths.includes(path)) {
           router.push("/");
         }
+        axiosInstance.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${res.data?.token}`;
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${res.data?.token}`;
+
         setUser(res.data?.user ?? null);
         return {
           user: res.data?.user ?? null,
@@ -82,7 +89,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       console.warn("Logout request failed, continuing cleanup");
     }
-    console.log("loginnning out");
     // Clear any local tokens if used
     delete axios.defaults.headers.common["Authorization"];
     localStorage.removeItem("token"); // just in case you store it there

@@ -10,27 +10,17 @@ export function usePagePrint() {
 
     const iframe = document.createElement("iframe");
     iframe.style.display = "none";
-    iframe.src = pageUrl;
+    iframe.src = `${pageUrl}?print=true`; // ✅ append print flag
 
     document.body.appendChild(iframe);
 
     iframe.onload = () => {
-      if (iframe.contentWindow) {
+      // Wait for the internal page to handle printing itself
+      iframe.contentWindow?.addEventListener("afterprint", () => {
+        iframe.remove();
         setIsLoading(false);
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-      }
+      });
     };
-
-    const handleAfterPrint = () => {
-      if (iframe.parentNode) {
-        iframe.parentNode.removeChild(iframe);
-      }
-    };
-
-    if (iframe.contentWindow) {
-      iframe.contentWindow.onafterprint = handleAfterPrint;
-    }
   }, []);
 
   return { isLoading, printPage };
