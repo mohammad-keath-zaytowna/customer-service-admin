@@ -13,13 +13,16 @@ export async function middleware(req: NextRequest) {
       {
         headers: {
           // Pass cookies if your backend uses them for auth
+          Authentication: req.headers.get("Authentication") || "",
           cookie: req.headers.get("cookie") || "",
+          "Content-Type": "application/json",
         },
+        credentials: "include",
       }
     );
-
     if (response.ok) {
       const data = await response.json();
+
       session = data?.user ? { user: data.user } : null;
     }
   } catch (e) {

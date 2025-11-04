@@ -61,7 +61,10 @@ export default function LoginForm() {
         // Ensure Authorization header is set for future requests
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         // Also set on axiosInstance used across the app
-        axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        axiosInstance.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${token}`;
+        
       }
 
       toast.success("Login Success!", {
