@@ -44,7 +44,7 @@ export default function Order() {
       // Wait a tiny bit for images/layout
       setTimeout(() => {
         window.print();
-      }, 300);
+      }, 1000);
     }
   }, [isPrintMode, order]);
 
