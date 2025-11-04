@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ZoomIn } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";

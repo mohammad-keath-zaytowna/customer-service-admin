@@ -1,4 +1,4 @@
-"use server";
+"use client";
 
 import { ServerActionResponse } from "@/types/server-action";
 import { OrderStatus } from "@/services/orders/types";
@@ -9,20 +9,17 @@ export async function changeOrderStatus(
   orderId: string,
   newOrderStatus: OrderStatus
 ): Promise<ServerActionResponse> {
-  const headers: Record<string, string> = {};
-  const { cookies } = await import("next/headers");
-  const token = cookies().get("token")?.value;
-  if (token) headers["Authorization"] = `Bearer ${token}`;
   const { data } = await axiosInstance.patch(
     `/api/orders/${orderId}/status`,
     {
       status: newOrderStatus,
     },
     {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     }
   );
-  revalidatePath("/orders");
 
   return data;
 }
