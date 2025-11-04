@@ -14,7 +14,7 @@ import { Settings, LogOut, LayoutGrid } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 
 export default function Profile() {
-  const { profile } = useUser();
+  const { profile, logout } = useUser();
 
   const getInitials = (name: string | null | undefined): string => {
     if (!name) return "??";
@@ -62,16 +62,14 @@ export default function Profile() {
             </Link>
           </DropdownMenuItem> */}
 
-          <form action="/auth/sign-out" method="post">
-            <DropdownMenuItem asChild>
-              <button
-                type="submit"
-                className="w-full justify-start py-3.5 pl-3 pr-8 tracking-wide !cursor-pointer"
-              >
-                <LogOut className="mr-3 size-5" /> Log Out
-              </button>
-            </DropdownMenuItem>
-          </form>
+          <DropdownMenuItem onClick={logout}>
+            <button
+              type="submit"
+              className="w-full justify-start py-3.5 pl-3 pr-8 tracking-wide !cursor-pointer"
+            >
+              <LogOut className="mr-3 size-5" /> Log Out
+            </button>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

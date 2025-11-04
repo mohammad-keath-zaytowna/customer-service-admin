@@ -11,10 +11,12 @@ import Typography from "@/components/ui/typography";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useUser } from "@/contexts/UserContext";
 
 export default function AppSidebar() {
   const pathname = usePathname();
   const { isMobile, setOpenMobile } = useSidebar();
+  const { logout } = useUser();
 
   return (
     <Sidebar className="shadow-md">
@@ -53,15 +55,13 @@ export default function AppSidebar() {
           </div>
 
           <div className="px-6 py-4 absolute left-0 w-full right-0 bottom-0 border-t">
-            <form action="/auth/sign-out" method="post">
-              <Button
-                type="submit"
-                className="w-full py-3 text-base whitespace-nowrap"
-              >
-                <LogOut className="size-6 mr-3 flex-shrink-0" />
-                Log out
-              </Button>
-            </form>
+            <Button
+              onClick={logout}
+              className="w-full py-3 text-base whitespace-nowrap"
+            >
+              <LogOut className="size-6 mr-3 flex-shrink-0" />
+              Log out
+            </Button>
           </div>
         </div>
       </SidebarContent>
