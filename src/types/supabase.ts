@@ -262,7 +262,7 @@ export type Database = {
           order_time: string;
           payment_method: Database["public"]["Enums"]["payment_method_enum"];
           shipping_cost: number;
-          status: Database["public"]["Enums"]["order_status_enum"];
+          status: "processing" | "delivered" | "cancelled" | "pending";
           total_amount: number;
           updated_at: string;
           userId: {
