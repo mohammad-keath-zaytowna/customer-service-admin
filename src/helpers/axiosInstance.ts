@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "http://qg8w48gw40gsc0oo4gsss8gg.91.99.224.155.sslip.io",
   // allow sending HttpOnly cookies from the backend (sameSite & CORS must allow)
   withCredentials: true,
 });
@@ -11,7 +11,8 @@ const axiosInstance = axios.create({
 // expect Bearer tokens). If you don't want this behavior, remove the interceptor.
 axiosInstance.interceptors.request.use((config) => {
   try {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const stored =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
     if (stored && config && config.headers) {
       config.headers["Authorization"] = `Bearer ${stored}`;
     }

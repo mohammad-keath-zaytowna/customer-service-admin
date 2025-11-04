@@ -1,4 +1,4 @@
-import axios from '@/helpers/axiosInstance';
+import axios from "@/helpers/axiosInstance";
 
 // Lightweight shim to replace Supabase helpers during migration.
 // This exposes the minimal functions the app expects: createBrowserClient,
@@ -10,12 +10,16 @@ const createBrowserClient = () => {
     auth: {
       async getSession() {
         // Call backend endpoint that returns session/user
-        const res = await axios.get('/api/users/me');
-        return { data: { session: res.data?.user ? { user: res.data.user } : null } };
+        const res = await axios.get("/api/users/me");
+        return {
+          data: { session: res.data?.user ? { user: res.data.user } : null },
+        };
       },
       // no-op signInWithOAuth placeholder
       async signInWithOAuth() {
-        throw new Error('OAuth sign-in not supported in backend shim; please use backend auth endpoints');
+        throw new Error(
+          "OAuth sign-in not supported in backend shim; please use backend auth endpoints"
+        );
       },
       onAuthStateChange() {
         // Supabase returns a subscription object; provide stub with unsubscribe
@@ -23,10 +27,10 @@ const createBrowserClient = () => {
       },
     },
     from() {
-      throw new Error('Use backend REST endpoints directly instead of from()');
+      throw new Error("Use backend REST endpoints directly instead of from()");
     },
     authGetUser: async () => {
-      const res = await axios.get('/api/users/me');
+      const res = await axios.get("/api/users/me");
       return { data: { user: res.data?.user ?? null } };
     },
   };
@@ -36,17 +40,23 @@ const createServerClient = () => {
   // server-side: use fetch to backend
   return {
     async authGetUser() {
-      const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
-      const res = await fetch(`${backendUrl}/api/users/me`, { credentials: 'include' });
+      const backendUrl =
+        process.env.BACKEND_URL ||
+        "http://qg8w48gw40gsc0oo4gsss8gg.91.99.224.155.sslip.io";
+      const res = await fetch(`${backendUrl}/api/users/me`, {
+        credentials: "include",
+      });
       if (!res.ok) return { data: { user: null } };
       const payload = await res.json();
       return { data: { user: payload.user } };
     },
     from() {
-      throw new Error('Use backend REST endpoints directly instead of from()');
+      throw new Error("Use backend REST endpoints directly instead of from()");
     },
     rpc() {
-      throw new Error('RPC calls should be replaced with backend REST endpoints');
+      throw new Error(
+        "RPC calls should be replaced with backend REST endpoints"
+      );
     },
   };
 };

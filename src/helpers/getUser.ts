@@ -4,7 +4,9 @@
  */
 export async function getUser(): Promise<any | null> {
   try {
-    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+    const backendUrl =
+      process.env.BACKEND_URL ||
+      "http://qg8w48gw40gsc0oo4gsss8gg.91.99.224.155.sslip.io";
     const res = await fetch(`${backendUrl}/api/users/me`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },

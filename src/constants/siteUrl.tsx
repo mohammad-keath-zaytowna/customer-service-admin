@@ -6,4 +6,4 @@ export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
 
 export const BackendURL = process.env.BACKEND_URL
   ? process.env.BACKEND_URL
-  : "http://localhost:5000";
+  : "http://qg8w48gw40gsc0oo4gsss8gg.91.99.224.155.sslip.io";

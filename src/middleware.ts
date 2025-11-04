@@ -7,7 +7,10 @@ export async function middleware(req: NextRequest) {
   let session = null;
   try {
     const response = await fetch(
-      `${process.env.BACKEND_URL || "http://localhost:5000"}/api/users/me`,
+      `${
+        process.env.BACKEND_URL ||
+        "http://qg8w48gw40gsc0oo4gsss8gg.91.99.224.155.sslip.io"
+      }/api/users/me`,
       {
         headers: {
           // Pass cookies if your backend uses them for auth

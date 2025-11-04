@@ -12,20 +12,34 @@ export async function POST(request: Request) {
   }
 
   try {
-    const backendRes = await fetch(`${process.env.BACKEND_URL || 'http://localhost:5000'}/auth/forgot-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, redirectTo: `${process.env.SITE_URL || 'http://localhost:3000'}/update-password` }),
-    });
+    const backendRes = await fetch(
+      `${
+        process.env.BACKEND_URL ||
+        "http://qg8w48gw40gsc0oo4gsss8gg.91.99.224.155.sslip.io"
+      }/auth/forgot-password`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          redirectTo: `${
+            process.env.SITE_URL || "http://localhost:3000"
+          }/update-password`,
+        }),
+      }
+    );
 
     const payload = await backendRes.json();
     if (!backendRes.ok) {
-      return NextResponse.json({ errors: payload?.errors ?? { email: payload?.message ?? 'Failed' } }, { status: 401 });
+      return NextResponse.json(
+        { errors: payload?.errors ?? { email: payload?.message ?? "Failed" } },
+        { status: 401 }
+      );
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Error forwarding forgot-password to backend', err);
-    return NextResponse.json({ errors: { general: 'Error' } }, { status: 500 });
+    console.error("Error forwarding forgot-password to backend", err);
+    return NextResponse.json({ errors: { general: "Error" } }, { status: 500 });
   }
 }
