@@ -17,7 +17,7 @@ export default function AuthProviders({ authType = "Login" }: Props) {
   const handleAuth = (authProvider: AuthProvider) => {
     const backend =
       process.env.NEXT_PUBLIC_BACKEND_URL ||
-      "http://qg8w48gw40gsc0oo4gsss8gg.91.99.224.155.sslip.io";
+      "https://api-lamsa.sadiq-store.com";
     const url = `${backend}/auth/oauth/${authProvider}?redirectTo=${encodeURIComponent(
       `${siteUrl}/auth/callback`
     )}`;

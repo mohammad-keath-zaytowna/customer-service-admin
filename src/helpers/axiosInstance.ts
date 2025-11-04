@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://qg8w48gw40gsc0oo4gsss8gg.91.99.224.155.sslip.io",
+  baseURL: "https://api-lamsa.sadiq-store.com",
   // allow sending HttpOnly cookies from the backend (sameSite & CORS must allow)
   withCredentials: true,
 });

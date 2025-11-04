@@ -8,8 +8,7 @@ export async function middleware(req: NextRequest) {
   try {
     const response = await fetch(
       `${
-        process.env.BACKEND_URL ||
-        "http://qg8w48gw40gsc0oo4gsss8gg.91.99.224.155.sslip.io"
+        process.env.BACKEND_URL || "https://api-lamsa.sadiq-store.com"
       }/api/users/me`,
       {
         headers: {
