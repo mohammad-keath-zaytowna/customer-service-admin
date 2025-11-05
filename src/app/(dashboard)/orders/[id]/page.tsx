@@ -51,14 +51,13 @@ export default function Order() {
     (order as any)?.customer?.name ||
     "Customer";
 
-  // Primary: order.phoneNumber (new field), with robust fallbacks
   const phoneCandidates = [
     (order as any)?.phoneNumber,
-    (order as any)?.phone, // legacy just in case
+    (order as any)?.phone,
     (order as any)?.userId?.phoneNumber,
-    (order as any)?.userId?.phone, // legacy
+    (order as any)?.userId?.phone,
     (order as any)?.customer?.phoneNumber,
-    (order as any)?.customer?.phone, // legacy
+    (order as any)?.customer?.phone,
     (order as any)?.billing?.phoneNumber,
     (order as any)?.billing?.phone,
     (order as any)?.shipping?.phoneNumber,
@@ -190,35 +189,36 @@ export default function Order() {
             </Typography>
           )}
 
+          {/* ✅ الصور + السعر بنفس الـ container */}
           {order.images?.length > 0 && (
-            <div className="grid grid-cols-2 gap-4">
-              {order.images.map((img: string, idx: number) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`Image ${idx + 1}`}
-                  className="h-56 object-contain rounded-md border" /* صغّرناها نتفة */
-                />
-              ))}
+            <div className="no-break flex flex-col items-center gap-4">
+              <div className="grid grid-cols-2 gap-4 w-full">
+                {order.images.map((img: string, idx: number) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    alt={`Image ${idx + 1}`}
+                    className="h-56 object-contain rounded-md border"
+                  />
+                ))}
+              </div>
+
+              {/* ✅ السعر صار تحت الصور مباشرة */}
+              <div className="bg-background rounded-lg flex flex-col gap-2 items-center p-4 md:px-8 mb-2 print:bg-white print:p-0 print:px-2">
+                <Typography
+                  component="h4"
+                  className="font-medium text-sm uppercase tracking-wide print:text-black"
+                >
+                  total amount
+                </Typography>
+                <Typography className="text-xl capitalize font-semibold tracking-wide text-primary">
+                  {typeof order.price === "number"
+                    ? `JOD${order.price.toFixed(2)}`
+                    : "-"}
+                </Typography>
+              </div>
             </div>
           )}
-        </div>
-
-        {/* Payment Section */}
-        <div className="bg-background rounded-lg flex flex-col gap-4 md:justify-end md:flex-row p-6 md:px-8 mb-4 print:flex-row print:justify-between print:mb-0 print:p-0 print:px-2 print:bg-white">
-          <div>
-            <Typography
-              component="h4"
-              className="font-medium text-sm uppercase mb-1 tracking-wide print:text-black"
-            >
-              total amount
-            </Typography>
-            <Typography className="text-xl capitalize font-semibold tracking-wide text-primary">
-              {typeof order.price === "number"
-                ? `JOD${order.price.toFixed(2)}`
-                : "-"}
-            </Typography>
-          </div>
         </div>
       </Card>
 
