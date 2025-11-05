@@ -152,7 +152,7 @@ export default function Order() {
         </div>
 
         {/* Product Info */}
-        <div className="mb-10 print:text-black">
+        <div className="mb-6 print:text-black">
           <Typography
             variant="h3"
             className="font-semibold text-card-foreground mb-3 print:text-black"
@@ -161,7 +161,7 @@ export default function Order() {
           </Typography>
 
           {order.details && (
-            <Typography className="text-gray-700 leading-relaxed mb-6 print:text-black">
+            <Typography className="text-gray-700 leading-relaxed mb-4 print:text-black">
               {order.details}
             </Typography>
           )}
@@ -173,14 +173,14 @@ export default function Order() {
                   key={idx}
                   src={img}
                   alt={`Image ${idx + 1}`}
-                  className=" h-64 object-contain rounded-md border"
+                  className="h-56 object-contain rounded-md border" /* صغّرناها نتفة */
                 />
               ))}
             </div>
           )}
         </div>
 
-        {/* Payment Section */}
+        {/* ✅ Payment Section صار تحت الصور مباشرة */}
         <div className="bg-background rounded-lg flex flex-col gap-4 md:justify-end md:flex-row p-6 md:px-8 mb-4 print:flex-row print:justify-between print:mb-0 print:p-0 print:px-2 print:bg-white">
           <div>
             <Typography

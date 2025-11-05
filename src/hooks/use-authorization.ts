@@ -4,6 +4,8 @@ const permissions = {
   orders: {
     canChangeStatus: ["super_admin", "admin", "cashier"],
     canPrint: ["super_admin", "admin", "cashier"],
+    // 👇 جديد: حتى يشتغل زر Edit بدون ما يوقع includes
+    canUpdate: ["super_admin", "admin"],
   },
   categories: {
     canCreate: ["super_admin", "admin"],
@@ -44,10 +46,20 @@ export function useAuthorization() {
     feature: F,
     action: keyof PermissionMap[F]
   ): boolean => {
-    if (isLoading || !profile || !profile.role) return false;
+    // لسا عم يحمّل أو ما في رول؟
+    const role = profile?.role;
+    if (isLoading || !role) return false;
 
-    const allowedRoles = permissions[feature][action];
-    return (allowedRoles as UserRole[]).includes(profile.role);
+    // feature موجود؟
+    const featureMap = permissions[feature];
+    if (!featureMap) return false;
+
+    // action موجود؟
+    const allowedRoles = featureMap[action];
+    if (!Array.isArray(allowedRoles)) return false;
+
+    // تحقق نهائي
+    return (allowedRoles as readonly UserRole[]).includes(role);
   };
 
   const isSelf = (staffId: string) => {
