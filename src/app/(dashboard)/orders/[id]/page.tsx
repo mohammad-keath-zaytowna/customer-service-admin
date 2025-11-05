@@ -1,6 +1,6 @@
 "use client";
-import { Metadata } from "next";
-import { notFound, useParams, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { FaBagShopping } from "react-icons/fa6";
 import { format } from "date-fns";
 
@@ -13,14 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { OrderBadgeVariants } from "@/constants/badge";
 import { fetchOrderDetails } from "@/services/orders";
 import { InvoiceActions } from "./_components/InvoiceActions";
-import { useEffect, useState } from "react";
 import { Order as OrderType } from "@/services/orders/types";
-
-type PageParams = {
-  params: {
-    id: string;
-  };
-};
 
 export default function Order() {
   const [order, setOrder] = useState<OrderType | null>(null);
@@ -39,9 +32,8 @@ export default function Order() {
   }, [id]);
 
   useEffect(() => {
-    // When in print mode and data is ready, trigger print automatically
+    // Auto-print when in print mode and data is ready
     if (isPrintMode && order) {
-      // Wait a tiny bit for images/layout
       setTimeout(() => {
         window.print();
       }, 1000);
@@ -51,6 +43,33 @@ export default function Order() {
   if (!order) {
     return <div>Loading...</div>;
   }
+
+  // --- Helpers: safer fallbacks for name & phoneNumber ---
+  const buyerName =
+    (order as any)?.name ||
+    (order as any)?.userId?.name ||
+    (order as any)?.customer?.name ||
+    "Customer";
+
+  // Primary: order.phoneNumber (new field), with robust fallbacks
+  const phoneCandidates = [
+    (order as any)?.phoneNumber,
+    (order as any)?.phone, // legacy just in case
+    (order as any)?.userId?.phoneNumber,
+    (order as any)?.userId?.phone, // legacy
+    (order as any)?.customer?.phoneNumber,
+    (order as any)?.customer?.phone, // legacy
+    (order as any)?.billing?.phoneNumber,
+    (order as any)?.billing?.phone,
+    (order as any)?.shipping?.phoneNumber,
+    (order as any)?.shipping?.phone,
+    (order as any)?.contact?.phoneNumber,
+    (order as any)?.contact?.phone,
+    (order as any)?.meta?.phoneNumber,
+    (order as any)?.meta?.phone,
+  ].filter((v) => typeof v === "string" && v.trim().length > 0);
+
+  const buyerPhone = phoneCandidates[0] ?? "-";
 
   return (
     <section>
@@ -138,10 +157,15 @@ export default function Order() {
             </Typography>
 
             <div className="flex flex-col text-sm gap-y-0.5">
-              <Typography component="p">{order.name}</Typography>
-              {order.phone && (
-                <Typography component="p">{order.phone}</Typography>
-              )}
+              <Typography component="p">{buyerName}</Typography>
+
+              {/* Always show one phoneNumber line */}
+              <Typography component="p">
+                <span dir="ltr" className="font-mono">
+                  {buyerPhone}
+                </span>
+              </Typography>
+
               {order.address && (
                 <Typography component="p" className="max-w-80">
                   {order.address}
@@ -180,7 +204,7 @@ export default function Order() {
           )}
         </div>
 
-        {/* ✅ Payment Section صار تحت الصور مباشرة */}
+        {/* Payment Section */}
         <div className="bg-background rounded-lg flex flex-col gap-4 md:justify-end md:flex-row p-6 md:px-8 mb-4 print:flex-row print:justify-between print:mb-0 print:p-0 print:px-2 print:bg-white">
           <div>
             <Typography
@@ -190,7 +214,9 @@ export default function Order() {
               total amount
             </Typography>
             <Typography className="text-xl capitalize font-semibold tracking-wide text-primary">
-              JOD{order.price?.toFixed(2)}
+              {typeof order.price === "number"
+                ? `JOD${order.price.toFixed(2)}`
+                : "-"}
             </Typography>
           </div>
         </div>

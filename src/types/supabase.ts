@@ -253,7 +253,7 @@ export type Database = {
           _id: string;
           address: string;
           createdAt: string;
-          phone: string;
+          phoneNumber: string;
           name: string;
           details: string | null;
           images: string[];
