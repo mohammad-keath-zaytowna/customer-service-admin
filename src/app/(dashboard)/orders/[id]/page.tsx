@@ -32,7 +32,6 @@ export default function Order() {
   }, [id]);
 
   useEffect(() => {
-    // Auto-print when in print mode and data is ready
     if (isPrintMode && order) {
       setTimeout(() => {
         window.print();
@@ -40,11 +39,8 @@ export default function Order() {
     }
   }, [isPrintMode, order]);
 
-  if (!order) {
-    return <div>Loading...</div>;
-  }
+  if (!order) return <div>Loading...</div>;
 
-  // --- Helpers: safer fallbacks for name & phoneNumber ---
   const buyerName =
     (order as any)?.name ||
     (order as any)?.userId?.name ||
@@ -58,14 +54,6 @@ export default function Order() {
     (order as any)?.userId?.phone,
     (order as any)?.customer?.phoneNumber,
     (order as any)?.customer?.phone,
-    (order as any)?.billing?.phoneNumber,
-    (order as any)?.billing?.phone,
-    (order as any)?.shipping?.phoneNumber,
-    (order as any)?.shipping?.phone,
-    (order as any)?.contact?.phoneNumber,
-    (order as any)?.contact?.phone,
-    (order as any)?.meta?.phoneNumber,
-    (order as any)?.meta?.phone,
   ].filter((v) => typeof v === "string" && v.trim().length > 0);
 
   const buyerPhone = phoneCandidates[0] ?? "-";
@@ -84,12 +72,10 @@ export default function Order() {
             >
               invoice
             </Typography>
-
             <div className="flex items-center gap-x-2">
               <Typography className="uppercase font-semibold text-xs print:text-black">
                 status
               </Typography>
-
               <Badge
                 variant={OrderBadgeVariants[order.status]}
                 className="flex-shrink-0 text-xs capitalize"
@@ -99,7 +85,6 @@ export default function Order() {
             </div>
           </div>
 
-          {/* Company Info */}
           <div className="flex flex-col text-sm gap-y-0.5 md:text-right print:text-right print:text-black">
             <div className="flex items-center md:justify-end gap-x-1 print:justify-end">
               <FaBagShopping className="size-6 text-primary mb-1 flex-shrink-0" />
@@ -111,7 +96,6 @@ export default function Order() {
                 {order.userId?.name || "Store"}
               </Typography>
             </div>
-
             {order.address && (
               <Typography component="p">{order.address}</Typography>
             )}
@@ -121,7 +105,7 @@ export default function Order() {
         <Separator className="my-6 print:bg-print-border" />
 
         {/* Invoice Meta Info */}
-        <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-10 print:flex-row print:justify-between print:text-black">
+        <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-6 print:flex-row print:justify-between print:text-black">
           <div>
             <Typography
               variant="p"
@@ -154,17 +138,13 @@ export default function Order() {
             >
               invoice to
             </Typography>
-
             <div className="flex flex-col text-sm gap-y-0.5">
               <Typography component="p">{buyerName}</Typography>
-
-              {/* Always show one phoneNumber line */}
               <Typography component="p">
                 <span dir="ltr" className="font-mono">
                   {buyerPhone}
                 </span>
               </Typography>
-
               {order.address && (
                 <Typography component="p" className="max-w-80">
                   {order.address}
@@ -174,51 +154,58 @@ export default function Order() {
           </div>
         </div>
 
-        {/* Product Info */}
-        <div className="mb-6 print:text-black">
+        {/* Product Info + Price */}
+        <div
+          className="no-break flex flex-col items-center gap-2 mb-4 print:text-black"
+          style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+        >
           <Typography
             variant="h3"
-            className="font-semibold text-card-foreground mb-3 print:text-black"
+            className="font-semibold text-card-foreground mb-2 print:text-black"
           >
             {order.name}
           </Typography>
 
           {order.details && (
-            <Typography className="text-gray-700 leading-relaxed mb-4 print:text-black">
+            <Typography className="text-gray-700 leading-relaxed mb-2 text-center print:text-black">
               {order.details}
             </Typography>
           )}
 
-          {/* ✅ الصور + السعر بنفس الـ container */}
           {order.images?.length > 0 && (
-            <div className="no-break flex flex-col items-center gap-4">
-              <div className="grid grid-cols-2 gap-4 w-full">
-                {order.images.map((img: string, idx: number) => (
-                  <img
-                    key={idx}
-                    src={img}
-                    alt={`Image ${idx + 1}`}
-                    className="h-56 object-contain rounded-md border"
-                  />
-                ))}
-              </div>
-
-              {/* ✅ السعر صار تحت الصور مباشرة */}
-              <div className="bg-background rounded-lg flex flex-col gap-2 items-center p-4 md:px-8 mb-2 print:bg-white print:p-0 print:px-2">
-                <Typography
-                  component="h4"
-                  className="font-medium text-sm uppercase tracking-wide print:text-black"
-                >
-                  total amount
-                </Typography>
-                <Typography className="text-xl capitalize font-semibold tracking-wide text-primary">
-                  {typeof order.price === "number"
-                    ? `JOD${order.price.toFixed(2)}`
-                    : "-"}
-                </Typography>
-              </div>
+            <div
+              className="grid grid-cols-2 gap-2 w-full"
+              style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+            >
+              {order.images.map((img: string, idx: number) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`Image ${idx + 1}`}
+                  className="h-48 object-contain rounded-md border"
+                  style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+                />
+              ))}
             </div>
           )}
+
+          {/* ✅ السعر صار ملزق تحت الصور ومضمون يضل بنفس الصفحة */}
+          <div
+            className="bg-background rounded-lg flex flex-col gap-1 items-center p-3 md:px-6 print:bg-white print:p-0 print:px-2"
+            style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
+          >
+            <Typography
+              component="h4"
+              className="font-medium text-sm uppercase tracking-wide print:text-black"
+            >
+              total amount
+            </Typography>
+            <Typography className="text-lg capitalize font-semibold tracking-wide text-primary">
+              {typeof order.price === "number"
+                ? `JOD${order.price.toFixed(2)}`
+                : "-"}
+            </Typography>
+          </div>
         </div>
       </Card>
 
