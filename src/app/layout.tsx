@@ -28,12 +28,11 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <TanstackQueryProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <PaymentRequired />
-            {/* <UserProvider>
+            <UserProvider>
               <TooltipProvider>{children}</TooltipProvider>
 
               <Toaster />
-            </UserProvider> */}
+            </UserProvider>
           </ThemeProvider>
         </TanstackQueryProvider>
       </body>
