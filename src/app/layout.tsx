@@ -6,6 +6,7 @@ import "@/app/globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { UserProvider } from "@/contexts/UserContext";
+import PaymentRequired from "@/components/payment-required";
 
 // pages have to be rendered dynamically because supabase server component client uses cookies
 export const dynamic = "force-dynamic";
@@ -27,11 +28,12 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <TanstackQueryProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <UserProvider>
+            <PaymentRequired />
+            {/* <UserProvider>
               <TooltipProvider>{children}</TooltipProvider>
 
               <Toaster />
-            </UserProvider>
+            </UserProvider> */}
           </ThemeProvider>
         </TanstackQueryProvider>
       </body>
